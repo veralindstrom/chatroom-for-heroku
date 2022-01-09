@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Registration Success</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container text-center">
+    <h3>You have created a role in this chatroom successfully!</h3>
+    <div th:text="${role}"></div>
+    <h4><a th:href="@{/}">Click here for Home</a></h4>
+    <h4><a th:href="@{/chatroom/{id}(id=${chatroom.id})}">Back to Chat</a></h4>
+</div>
+
+</body>
+</html>
