@@ -10,6 +10,8 @@ import com.example.springboottutorial.id1212.entities.file.DBFileRepository;
 import com.example.springboottutorial.id1212.entities.user.User;
 import com.example.springboottutorial.id1212.entities.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +38,10 @@ public class UserController {
 
     @PostMapping("/home")
     public String findUser(@RequestParam String email, @RequestParam String password, Model model, HttpServletResponse response) {
-        user = userRepository.findUserByEmailAndPassword(email, password);
+        User tempUser = userRepository.findUserByEmail(email);
+        if(new BCryptPasswordEncoder().matches(password, tempUser.getPassword())){
+            user = tempUser;
+        }
         if (user != null) {
             setCookie(response, user.getUserId().toString());
             model.addAttribute("user", user);
@@ -101,6 +106,153 @@ public class UserController {
         model.addAttribute("favchatroom", favoriteChatrooms);
     }
 
+   /* @GetMapping("/create-chatroom")
+    public String createChatroom(Model model) {
+        if (user != null) {
+            Chatroom chatroom = new Chatroom();
+            ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
+            model.addAttribute("categories", categories);
+            model.addAttribute("chatroom", chatroom);
+
+            return "create-chatroom";
+        } else {
+            String message = "You are logged out";
+            model.addAttribute("message", message);
+        }
+        return "index";
+    }*/
+
+  /*  @PostMapping("/create-chatroom-process")
+    public String processChatroom(Model model, Chatroom chatroom, @RequestParam(required = false) ArrayList<Integer> categoryId) {
+        if(user != null){
+            chatroom.addUserCount(1);
+            chatroomRepository.save(chatroom);
+
+            if(categoryId != null) {
+                for (Integer id : categoryId) {
+                    chatroomCategory = new ChatroomCategory();
+                    chatroomCategory.setCategoryId(id);
+                    chatroomCategory.setChatroomId(chatroom.getId());
+                    chatroomCategoryRepository.save(chatroomCategory);
+                }
+            }
+            // ChatroomUser for Admin always
+            ChatroomUser chatroomUser = new ChatroomUser();
+            chatroomUser.setChatroomId(chatroom.getId());
+            chatroomUser.setUserId(user.getUserId());
+            chatroomUser.setAdmin(1); // TRUE
+            chatroomUser.setFavorite(0); // FALSE
+            chatroomUserRepository.save(chatroomUser);
+
+
+            // Private status for chatroom
+            Boolean statusPublic = chatroomRepository.getStatusByChatroomId(chatroom.getId());
+            if (!statusPublic) {
+                EmailsDTO emails = new EmailsDTO();
+                model.addAttribute("emails", emails);
+                model.addAttribute("user", user);
+                model.addAttribute("chatroom", chatroom);
+
+                return "create-chatroom-private";
+            }
+
+            return "create-chatroom-success";
+        } else {
+            String message = "You are logged out";
+            model.addAttribute("message", message);
+        }
+        return "index";
+    }*/
+
+ /*   @PostMapping("/create-chatroom-private-process/{id}")
+    public String processChatroomPrivate(Model model, EmailsDTO emails, @PathVariable Integer id) {
+        if (user != null) {
+            Integer number = emails.getNumber();
+            Chatroom chatroom = chatroomRepository.findChatRoomByChatroomId(id);
+
+            String emailInput = emails.getEmails();
+            if(emailInput == null) {
+                String message = "No emails were entered";
+                model.addAttribute("nomail", message);
+            }
+            else {
+                long count = emailInput.chars().filter(ch -> ch == ',').count(); // ex. 3 emails = 2 ","
+                long emailsCounted = count + 1;
+                if (emailsCounted == number) {
+                    if(number != 1) { // If more than one email added
+                        String[] uniqueEmails = emailInput.split(", ", number); // check first for number of , to know limit value
+                        splitEmailsPrivateChatroom(model, uniqueEmails, chatroom);
+                    }
+                }
+                if (emailsCounted != number) {
+                    if (count != 0){ // If more than one email added
+                        String missMatch = "You entered " + number + " users to add, but entered " + emailsCounted + " emails.";
+                        String[] uniqueEmails = emailInput.split(", ", number); // check first for number of , to know limit value
+                        splitEmailsPrivateChatroom(model, uniqueEmails, chatroom);
+                        model.addAttribute("missmatch", missMatch);
+                    }
+                }
+                if (count == 0) {
+                    Integer userId = userRepository.getUserIdByEmail(emailInput);
+                    if(userId == null){
+                        String message = "The email you entered is not in our system " + emailInput;
+                        model.addAttribute("nouser", message);
+                    }
+                    if(userId != null){
+                        model.addAttribute("onemail", emailInput);
+                    }
+                }
+            }
+            model.addAttribute("chatroom", chatroom);
+            return "create-chatroom-success";
+
+        } else {
+            String message = "You are logged out";
+            model.addAttribute("message", message);
+        }
+        return "index";
+    }*/
+
+  /*  public void splitEmailsPrivateChatroom(Model model,String[] emails, Chatroom chatroom) {
+        ArrayList<String> failedEmails = new ArrayList<>();
+        ArrayList<String> successfulEmails = new ArrayList<>();
+        long fail = 0;
+        long success = 0;
+        for (String mail : emails) {
+            System.out.println("EMAILS = " + mail + " ------------------------------------------------------");
+            Integer userId = userRepository.getUserIdByEmail(mail);
+            if (userId == null) {
+                failedEmails.add(mail);
+                fail = fail + 1;
+            }
+            if (userId != user.getUserId()) { // Not re-add admin user, chatroom creator
+                if (userId != null) {
+                    chatroom.addUserCount(1);
+                    ChatroomUser chatroomUser = new ChatroomUser();
+                    chatroomUser.setChatroomId(chatroom.getId());
+                    chatroomUser.setUserId(userId);
+                    chatroomUser.setAdmin(0); // FALSE
+                    chatroomUser.setFavorite(0); // FALSE
+                    chatroomUserRepository.save(chatroomUser);
+                    successfulEmails.add(mail);
+                    success = success + 1;
+                }
+            }
+        }
+        if (fail != 0 && success != 0) { // Not fail or succeed completely
+            model.addAttribute("failed", failedEmails);
+            model.addAttribute("success", successfulEmails);
+        }
+        else if (success == 0 && fail != 0) { // Failure
+            model.addAttribute("failed", failedEmails);
+        }
+        else if (fail == 0 && success != 0) { // Success
+            model.addAttribute("success", successfulEmails);
+        }
+
+    }*/
+
+
     @GetMapping("/signup")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
@@ -110,6 +262,7 @@ public class UserController {
 
     @PostMapping("/signup-process")
     public String processRegister(User user) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.save(user);
 
         return "signup-success";

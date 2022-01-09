@@ -14,37 +14,37 @@
 <body>
 <div class="container text-center">
     <h3>You have created a chatroom successfully!</h3>
-    <h1 class="title" th:text="${chatroom.name}"></h1>
+    <h3 class="title" th:text="${chatroom.name}"></h3>
 
     <div th:if="${nomail}" class="chatroom-box">
-        <h1 class="title" th:text="${nomail}"></h1>
+        <h1 class="message" th:text="${nomail}"></h1>
     </div>
 
     <div th:if="${nouser}" class="chatroom-box">
-        <h1 class="title" th:text="${nouser}"></h1>
+        <h1 class="message" th:text="${nouser}"></h1>
     </div>
 
     <div th:if="${onemail}" class="chatroom-box">
-        <h1 class="title" th:text="${onemail}"></h1>
+        <h1 class="message" th:text="${onemail}"></h1>
     </div>
 
     <div th:if="${missmatch}" class="chatroom-box">
-        <h1 class="title" th:text="${missmatch}"></h1>
+        <h1 class="message" th:text="${missmatch}"></h1>
     </div>
 
     <div th:if="${success}" class="chatroom-box">
         <h6 class="list-title"> Following e-mails were successfully added:</h6>
         <ul th:each="mail: ${success}">
-            <li class="chatroom-list">
-                <a class="chatroom-list-element-alone" th:text="${mail}"></a>
+            <li class="list">
+                <a class="list-mail" th:text="${mail}"></a>
             </li>
         </ul>
     </div>
     <div th:if="${failed}" class="chatroom-box">
         <h6 class="list-title"> Cannot find user for e-mails:</h6>
         <ul th:each="mail: ${failed}">
-            <li class="chatroom-list">
-                <a class="chatroom-list-element-alone" th:text="${mail}"></a>
+            <li class="list">
+                <a class="list-mail" th:text="${mail}"></a>
             </li>
         </ul>
     </div>

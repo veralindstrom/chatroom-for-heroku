@@ -18,8 +18,8 @@
 <div class="container">
     <form th:action="@{/create-chatroom-private-process/{id}(id=${chatroom.id})}" th:object="${emails}"
           method="POST" style="max-width: 600px; margin: 0 auto;">
+            <div style="display:none" th:text="${user.username}"></div>
 
-            <div th:text="${user.username}"></div>
             <div>
                 <h3 style="display:inline-block">Add the Users to your Private Chatroom </h3>
                 <h3 style="display:inline-block" th:text="${chatroom.name}"></h3>
