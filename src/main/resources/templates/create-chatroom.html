@@ -12,7 +12,7 @@
         .container{
             margin: 10% 10%;
             display: grid;
-            grid-template-columns: 60% 40%;
+            grid-template-columns: auto auto;
         }
 
     </style>
@@ -25,13 +25,13 @@
             <h3 style="margin-bottom:20px;">Create a Chatroom</h3>
         </div>
         <div class="row mb-3">
-            <label for="chatroomName" class="col-sm-2 col-form-label">Chatroom Name</label>
+            <label for="chatroomName" class="col-sm-2 col-form-label" style="width:max-content">Chatroom Name</label>
             <div class="col-md-6">
                 <input class="form-control" id="chatroomName" th:field="*{name}" required minlength="1">
             </div>
         </div>
             <fieldset class="row mb-3">
-                <legend class="col-form-label col-sm-2 pt-0">Category</legend>
+                <legend class="col-form-label col-sm-2 pt-0" style="width:max-content">Category</legend>
                 <div class="col-sm-10">
                     <div class="btn-group" role="group" th:each="category: ${categories}" aria-label="Basic checkbox toggle button group">
                         <input type="checkbox" class="btn-check"  th:id="'btncheck' + ${category.categoryId - 1}" name="categoryId" th:value="${category.categoryId}" autocomplete="off">
@@ -40,7 +40,7 @@
                 </div>
             </fieldset>
         <div class="row mb-3">
-            <div class="col-sm-10 offset-sm-2">
+            <div class="col-sm-10">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="gridCheck1" th:field="*{status}">
                     <label class="form-check-label" for="gridCheck1">
