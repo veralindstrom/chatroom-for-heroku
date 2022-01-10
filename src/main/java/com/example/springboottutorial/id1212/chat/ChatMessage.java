@@ -11,6 +11,7 @@ public class ChatMessage {
     private Integer chatroomId;
     private Integer userId;
     private String fileId;
+    private Integer messageId;
 
     public enum MessageType {
         CHAT,
@@ -73,5 +74,13 @@ public class ChatMessage {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public Integer getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(Integer messageId) {
+        this.messageId = messageId;
     }
 }

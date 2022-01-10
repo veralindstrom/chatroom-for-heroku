@@ -13,6 +13,11 @@ public interface MessageRepository extends CrudRepository<Message, Integer> {
     Message findMessageByChatroomId(Integer chatroomId);
     ArrayList<Message> findMessagesByChatroomIdAndFileIdIsNotNull(Integer chatroomId);
 
+  /*  Integer findMessageIdMessage
+
+    @Query("select m.messageId from Message m where m.userId = ?1 and m.chatroomId = ?2 and m.date")
+    Integer getMessageIdByUserIdChatroomId(Integer userId, Integer chatroomId);*/
+
     @Query("select m from Message m where m.chatroomId = ?1 order by m.date ASC")
     ArrayList<Message> getAllMessagesInChatroom(Integer chatroomId);
 

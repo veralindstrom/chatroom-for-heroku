@@ -64,6 +64,9 @@ public class ChatController {
         message.setFileId(fileId);
         messageRepository.save(message);
 
+        Integer messageId = message.getId();
+        chatMessage.setMessageId(messageId);
+
         if(fileId != null) {
             DBFileUser dbFileUser = new DBFileUser();
             dbFileUser.setFileId(fileId);
