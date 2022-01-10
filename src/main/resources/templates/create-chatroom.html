@@ -11,6 +11,12 @@
     <style>
         .container{
             margin: 10% 10%;
+            display: grid;
+            grid-template-columns: auto auto;
+        }
+
+
+        .category-create{
         }
     </style>
 </head>
@@ -27,15 +33,15 @@
                 <input class="form-control" id="chatroomName" th:field="*{name}" required minlength="1">
             </div>
         </div>
-        <fieldset class="row mb-3">
-            <legend class="col-form-label col-sm-2 pt-0">Category</legend>
-            <div class="col-sm-10">
-                <div class="btn-group" role="group" th:each="category: ${categories}" aria-label="Basic checkbox toggle button group">
-                    <input type="checkbox" class="btn-check"  th:id="'btncheck' + ${category.categoryId - 1}" name="categoryId" th:value="${category.categoryId}" autocomplete="off">
-                    <label class="btn btn-outline-primary" th:for="'btncheck' + ${category.categoryId - 1}" th:text="${category.category}"></label>
+            <fieldset class="row mb-3">
+                <legend class="col-form-label col-sm-2 pt-0">Category</legend>
+                <div class="col-sm-10">
+                    <div class="btn-group" role="group" th:each="category: ${categories}" aria-label="Basic checkbox toggle button group">
+                        <input type="checkbox" class="btn-check"  th:id="'btncheck' + ${category.categoryId - 1}" name="categoryId" th:value="${category.categoryId}" autocomplete="off">
+                        <label class="btn btn-outline-primary" th:for="'btncheck' + ${category.categoryId - 1}" th:text="${category.category}"></label>
+                    </div>
                 </div>
-            </div>
-        </fieldset>
+            </fieldset>
         <div class="row mb-3">
             <div class="col-sm-10 offset-sm-2">
                 <div class="form-check">
@@ -48,6 +54,18 @@
         </div>
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
+    <div class="category">
+        <form class="create-category-form" th:action="@{/create-category}" method="GET" style="max-width: 600px;">
+            <label class="col-form-label"> Create a category? </label>
+            <button type="submit" class="btn role-btn">Create</button>
+            <div th:if="${existmes}" class="col-form-label" th:text="${existmes}"></div>
+        </form>
+        <form class="remove-category-form" th:action="@{/remove-category}" method="GET" style="max-width: 600px;">
+            <label class="col-form-label"> Remove a category? </label>
+            <button type="submit" class="btn role-btn">Remove</button>
+            <div th:if="${notremove}" class="col-form-label" th:text="${notremove}"></div>
+        </form>
+    </div>
 </div>
 </body>
 </html>

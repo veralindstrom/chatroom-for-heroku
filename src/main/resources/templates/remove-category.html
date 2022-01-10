@@ -16,24 +16,24 @@
 </head>
 <body>
 <div class="container">
-    <form th:action="@{create-role-process(id=${chatroom.id})}" th:object="${role}"
+    <form th:action="@{remove-category-process}"
           method="POST" style="max-width: 600px; margin: 0 auto;">
         <div class="row mb-3">
-            <div style="display:none" th:text="${chatroom.id}"></div>
-            <div style="display:none" th:text="${chatroom.name}"></div>
             <div style="display:none" th:text="${user.username}"></div>
             <div>
-                <h3 style="display:inline-block">Create a Role in Chatroom </h3>
-                <h3 style="display:inline-block" th:text="${chatroom.name}"></h3>
+                <h3 style="display:inline-block">Remove a Category </h3>
             </div>
-            <div style="grid-template-column: auto auto; margin-top:20px;" >
-                <label style="width: 100%;"for="roleName" class="col-sm-2 col-form-label">Your Desired Role</label>
-                <div style="margin-top:10px;" class="col-md-6">
-                    <input class="form-control" id="roleName" th:field="*{role}" required minlength="none">
+            <fieldset class="row mb-3">
+                <legend class="col-form-label col-sm-2 pt-0">Category</legend>
+                <div class="col-sm-10">
+                    <div class="btn-group" role="group" th:each="category: ${categories}" aria-label="Basic checkbox toggle button group">
+                        <input type="radio" class="btn-check"  th:id="'btncheck' + ${category.categoryId - 1}" name="categoryId" th:value="${category.categoryId}" autocomplete="off">
+                        <label class="btn btn-outline-primary" th:for="'btncheck' + ${category.categoryId - 1}" th:text="${category.category}"></label>
+                    </div>
                 </div>
-            </div>
+            </fieldset>
         </div>
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" class="btn btn-primary">Remove</button>
     </form>
 </div>
 </body>

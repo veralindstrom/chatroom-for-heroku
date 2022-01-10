@@ -25,15 +25,15 @@ public class ChatroomController {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private  ChatroomUserRepository chatroomUserRepository;
+    private ChatroomUserRepository chatroomUserRepository;
     @Autowired
-    private  ChatroomRepository chatroomRepository;
+    private ChatroomRepository chatroomRepository;
     @Autowired
-    private  CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
     @Autowired
-    private  ChatroomCategoryRepository chatroomCategoryRepository;
+    private ChatroomCategoryRepository chatroomCategoryRepository;
     @Autowired
-    private  RoleRepository roleRepository;
+    private RoleRepository roleRepository;
     @Autowired
     private MessageRepository messageRepository;
     @Autowired
@@ -43,10 +43,15 @@ public class ChatroomController {
     private ChatroomCategory chatroomCategory;
 
     public void readCookie(@CookieValue(value = "userId", required = false) String userId) {
-        if(userId != null) {
+        if (userId != null) {
             user = userRepository.findUserByUserId(Integer.parseInt(userId));
         }
     }
+
+ /*   @GetMapping("/test-chat-functionality")
+    public String showTestChat() {
+        return "test-chat-functionality";
+    }*/
 
     @GetMapping("/chatroom/{id}")
     public String showChatroom(@PathVariable Integer id, Model model, @CookieValue(value = "userId", required = false) String userIdFromCookie) {
@@ -61,7 +66,10 @@ public class ChatroomController {
 
 
             for (ChatroomCategory chatroomCategory : chatroomCategories) {
-                categories.add(categoryRepository.findCategoryBycategoryId(chatroomCategory.getCategoryId()));
+                categories.add(categoryRepository.findCategoryByCategoryId(chatroomCategory.getCategoryId()));
+            }
+            if(categories.size() > 0) {
+                model.addAttribute("categories", categories);
             }
 
             if (chatroomUser == null) { // if chatroomUser not exist - user joined new public room
@@ -86,16 +94,14 @@ public class ChatroomController {
 
 
                 Integer favoriteStatus = chatroomUserRepository.getFavoriteStatusByUserIdChatroomId(userId, id);
-                String favoriteString = "false";
-                if (favoriteStatus != null) { //
-                    if (favoriteStatus.equals(1)) {
-                        favoriteString = "true";
-                    }
-                } else {
-                    favoriteStatus = 0;
+               // String favoriteString = "false";
+                if (favoriteStatus.equals(1)) {
+                    //favoriteString = "true";
+                    model.addAttribute("favorite", favoriteStatus);
                 }
-                model.addAttribute("favString", favoriteString); // must have for js code, not work with bool or number
-                model.addAttribute("favorite", favoriteStatus);
+
+                //model.addAttribute("favString", favoriteString); // must have for js code, not work with bool or number
+                //model.addAttribute("favorite", favoriteStatus);
 
                 Integer roleId = chatroomUser.getRoleId();
                 if (roleId != null) {
@@ -104,7 +110,11 @@ public class ChatroomController {
                     model.addAttribute("userRole", roleName);
                 }
 
-                model.addAttribute("categories", categories);
+                if(chatroomUserRepository.getAdminStatusByUserIdChatroomId(userId, id).equals(1)){
+                    Boolean admin = true;
+                    model.addAttribute("admin", admin);
+                }
+
                 //model.addAttribute("chatroom", chatroomWithUser);
                 Chatroom cr = chatroomRepository.findChatRoomByChatroomId(id);
                 model.addAttribute("user", user);
@@ -190,7 +200,7 @@ public class ChatroomController {
     }
 
     @GetMapping("/chatroom/{id}/create-role")
-    public String createRole(Model model, @PathVariable Integer id,  @CookieValue(value = "userId", required = false) String userIdFromCookie) {
+    public String createRole(Model model, @PathVariable Integer id, @CookieValue(value = "userId", required = false) String userIdFromCookie) {
         readCookie(userIdFromCookie);
         if (user != null) {
             Integer currentRole = chatroomUserRepository.getRoleIdByUserIdChatroomId(user.getUserId(), id);
@@ -245,7 +255,7 @@ public class ChatroomController {
         roleRepository.delete(role);*/
 
         chatroomUserRepository.delete(chatroomUser);
-        System.out.println("AFTER DELETE CHATROOM USER! ----------------------------------------");
+        //System.out.println("AFTER DELETE CHATROOM USER! ----------------------------------------");
         Chatroom chatroom = chatroomRepository.findChatRoomByChatroomId(id);
         ArrayList<ChatroomCategory> chatroomCategories = chatroomCategoryRepository.findChatroomCategoriesByChatroomId(id);
         if (chatroomUser.getAdmin() == 1) { // TRUE
@@ -288,11 +298,11 @@ public class ChatroomController {
 
     @PostMapping("/create-chatroom-process")
     public String processChatroom(Model model, Chatroom chatroom, @RequestParam(required = false) ArrayList<Integer> categoryId) {
-        if(user != null){
+        if (user != null) {
             chatroom.addUserCount(1);
             chatroomRepository.save(chatroom);
 
-            if(categoryId != null) {
+            if (categoryId != null) {
                 for (Integer id : categoryId) {
                     chatroomCategory = new ChatroomCategory();
                     chatroomCategory.setCategoryId(id);
@@ -328,6 +338,196 @@ public class ChatroomController {
         return "index";
     }
 
+    @GetMapping("/create-category")
+    public String createCategory(Model model, @CookieValue(value = "userId", required = false) String userId) {
+        readCookie(userId);
+        if (user != null) {
+            Category category = new Category();
+            model.addAttribute("category", category);
+            model.addAttribute("user", user);
+
+            return "create-category";
+        } else {
+            String message = "You are logged out";
+            model.addAttribute("message", message);
+        }
+        return "index";
+    }
+
+    @PostMapping("/create-category-process")
+    public String processCategory(Model model, String category) { // Does not work when Role role as should
+        if (user != null) {
+            ArrayList<String> currentCat = categoryRepository.getAllCategoryByName();
+            Boolean alreadyExists = false;
+            for (String name : currentCat) {
+                if (name.equalsIgnoreCase(category)) {
+                    alreadyExists = true;
+                    String existmes = "Category already exists";
+                    model.addAttribute("existmes", existmes);
+                }
+            }
+            if (!alreadyExists) {
+                String categoryName = category.substring(0, 1).toUpperCase() + category.substring(1);
+                Category newCategory = new Category();
+                newCategory.setCategory(categoryName);
+                categoryRepository.save(newCategory);
+            }
+            Chatroom chatroom = new Chatroom();
+            ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
+            model.addAttribute("categories", categories);
+            model.addAttribute("chatroom", chatroom);
+            model.addAttribute("user", user);
+
+            return "create-chatroom"; // send in as model variable to show only if successful add
+        } else {
+            String message = "You are logged out";
+            model.addAttribute("message", message);
+        }
+        return "index";
+    }
+
+    @GetMapping("/remove-category")
+    public String removeCategory(Model model, @CookieValue(value = "userId", required = false) String userId) {
+        readCookie(userId);
+        if (user != null) {
+            ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
+            model.addAttribute("categories", categories);
+            model.addAttribute("user", user);
+
+            return "remove-category";
+        } else {
+            String message = "You are logged out";
+            model.addAttribute("message", message);
+        }
+        return "index";
+    }
+
+    @PostMapping("/remove-category-process")
+    public String processRemoveCategory(Model model, @RequestParam(required = false) ArrayList<Integer> categoryId) { // Does not work when Role role as should
+        if (user != null) {
+            //ArrayList<String> cannotRemove = new ArrayList<>();
+            if (categoryId != null) {
+                for (Integer id : categoryId) {
+                    ArrayList<ChatroomCategory> chatroomCategories = chatroomCategoryRepository.findChatroomCategoriesByCategoryId(id);
+                    String catName = categoryRepository.getCategoryNameById(id);
+                    if (chatroomCategories.size() > 0) {
+                        //cannotRemove.add(catName);
+                        String notremove = "Category " + catName + " cannot be removed when used in chatrooms.";
+                        model.addAttribute("notremove", notremove);
+                    } else {
+                        Category removeCat = categoryRepository.findCategoryByCategoryId(id);
+                        categoryRepository.delete(removeCat);
+                    }
+                }
+            }
+           /* if (!cannotRemove.isEmpty()) {
+                String notremove = "Category " + cannotRemove + " cannot be removed when used in chatrooms.";
+                model.addAttribute("notremove", notremove);
+            }*/
+
+            Chatroom chatroom = new Chatroom();
+            ArrayList<Category> categories = (ArrayList<Category>) categoryRepository.findAll();
+            model.addAttribute("categories", categories);
+            model.addAttribute("chatroom", chatroom);
+            model.addAttribute("user", user);
+
+            return "create-chatroom"; // send in as model variable to show only if successful add
+        } else {
+            String message = "You are logged out";
+            model.addAttribute("message", message);
+        }
+        return "index";
+    }
+
+    @GetMapping("/chatroom/{id}/change-chatroom-category")
+    public String changeChatroomCategory(Model model, @PathVariable Integer id, @CookieValue(value = "userId", required = false) String userId) {
+        readCookie(userId);
+        if (user != null) {
+            ArrayList<ChatroomCategory> chatroomCategories = chatroomCategoryRepository.findChatroomCategoriesByChatroomId(id);
+            ArrayList<Category> categories = new ArrayList<>();
+            for (ChatroomCategory chatroomCategory : chatroomCategories) {
+                categories.add(categoryRepository.findCategoryByCategoryId(chatroomCategory.getCategoryId()));
+            }
+            ArrayList<Category> allCategories = (ArrayList<Category>) categoryRepository.findAll();
+            Chatroom chatroom = chatroomRepository.findChatRoomByChatroomId(id);
+
+            allCategories.removeAll(categories);
+
+            if(categories.size() > 0){
+                model.addAttribute("chatcategories", categories); // chatroom categories
+            }
+            if(allCategories.size() > 0){
+                model.addAttribute("categories", allCategories); // all categories
+            }
+
+            model.addAttribute("chatroom", chatroom);
+            model.addAttribute("user", user);
+
+            return "change-chatroom-category";
+        } else {
+            String message = "You are logged out";
+            model.addAttribute("message", message);
+        }
+        return "index";
+    }
+
+    @PostMapping("/chatroom/{id}/change-chatroom-category-process")
+    public String changeChatroomCategory(Model model, @PathVariable Integer id, @RequestParam(required = false) ArrayList<Integer> categoryId, @RequestParam(required = false) ArrayList<Integer> chatcategoryId) { // Does not work when Role role as should
+        if (user != null) {
+            if (chatcategoryId != null) {
+                for (Integer catId : chatcategoryId) {
+                    ChatroomCategory chatroomCategory = chatroomCategoryRepository.findChatroomCategoryByCategoryIdAndChatroomId(catId, id);
+                    if (chatroomCategory != null) {
+                        chatroomCategoryRepository.delete(chatroomCategory);
+                    }
+                }
+            }
+            Chatroom chatroom = chatroomRepository.findChatRoomByChatroomId(id);
+            if (categoryId != null) {
+                for (Integer catId : categoryId) {
+                    chatroomCategory = new ChatroomCategory();
+                    chatroomCategory.setCategoryId(catId);
+                    chatroomCategory.setChatroomId(chatroom.getId());
+                    chatroomCategoryRepository.save(chatroomCategory);
+                }
+            }
+            model.addAttribute("chatroom", chatroom);
+            model.addAttribute("user", user);
+
+            return "redirect:/chatroom/{id}";
+        } else {
+            String message = "You are logged out";
+            model.addAttribute("message", message);
+        }
+        return "index";
+    }
+
+    @PostMapping("/chatroom/{id}/change-favorite")
+    public String changeFavorite(Model model, @PathVariable Integer id) { // Does not work when Role role as should
+        if (user != null) {
+            Integer currentStatus = chatroomUserRepository.getFavoriteStatusByUserIdChatroomId(user.getUserId(), id);
+            if(currentStatus.equals(1)) { // remove favorite
+                Integer falseStatus = 0;
+                chatroomUserRepository.updateChatroomUserWithFavoriteStatus(falseStatus, id, user.getUserId());
+            }
+            if (currentStatus.equals(0)){ // make favorite
+                Integer trueStatus = 1;
+                chatroomUserRepository.updateChatroomUserWithFavoriteStatus(trueStatus, id, user.getUserId());
+                model.addAttribute("favorite", trueStatus);
+            }
+
+            Chatroom chatroom = chatroomRepository.findChatRoomByChatroomId(id);
+            model.addAttribute("chatroom", chatroom);
+            model.addAttribute("user", user);
+
+            return "redirect:/chatroom/{id}";
+        } else {
+            String message = "You are logged out";
+            model.addAttribute("message", message);
+        }
+        return "index";
+    }
+
     @PostMapping("/create-chatroom-private-process/{id}")
     public String processChatroomPrivate(Model model, EmailsDTO emails, @PathVariable Integer id) {
         if (user != null) {
@@ -335,35 +535,34 @@ public class ChatroomController {
             Chatroom chatroom = chatroomRepository.findChatRoomByChatroomId(id);
 
             String emailInput = emails.getEmails();
-            if(emailInput == null) {
+            if (emailInput == null || emailInput.equals("") || emailInput.isEmpty()) {
                 String message = "No emails were entered";
                 model.addAttribute("nomail", message);
-            }
-            else {
+            } else {
                 long count = emailInput.chars().filter(ch -> ch == ',').count(); // ex. 3 emails = 2 ","
                 long emailsCounted = count + 1;
+                if (count == 0) {
+                    Integer userId = userRepository.getUserIdByEmail(emailInput);
+                    if (userId == null) {
+                        String message = "The email you entered is not in our system " + emailInput;
+                        model.addAttribute("nouser", message);
+                    }
+                    if (userId != null) {
+                        model.addAttribute("onemail", emailInput);
+                    }
+                }
                 if (emailsCounted == number) {
-                    if(number != 1) { // If more than one email added
+                    if (number != 1) { // If more than one email added
                         String[] uniqueEmails = emailInput.split(", ", number); // check first for number of , to know limit value
                         splitEmailsPrivateChatroom(model, uniqueEmails, chatroom);
                     }
                 }
                 if (emailsCounted != number) {
-                    if (count != 0){ // If more than one email added
+                    if (count != 0) { // If more than one email added
                         String missMatch = "You entered " + number + " users to add, but entered " + emailsCounted + " emails";
                         String[] uniqueEmails = emailInput.split(", ", number); // check first for number of , to know limit value
                         splitEmailsPrivateChatroom(model, uniqueEmails, chatroom);
                         model.addAttribute("missmatch", missMatch);
-                    }
-                }
-                if (count == 0) {
-                    Integer userId = userRepository.getUserIdByEmail(emailInput);
-                    if(userId == null){
-                        String message = "The email you entered is not in our system " + emailInput;
-                        model.addAttribute("nouser", message);
-                    }
-                    if(userId != null){
-                        model.addAttribute("onemail", emailInput);
                     }
                 }
             }
@@ -377,13 +576,12 @@ public class ChatroomController {
         return "index";
     }
 
-    public void splitEmailsPrivateChatroom(Model model,String[] emails, Chatroom chatroom) {
+    public void splitEmailsPrivateChatroom(Model model, String[] emails, Chatroom chatroom) {
         ArrayList<String> failedEmails = new ArrayList<>();
         ArrayList<String> successfulEmails = new ArrayList<>();
         long fail = 0;
         long success = 0;
         for (String mail : emails) {
-            System.out.println("EMAILS = " + mail + " ------------------------------------------------------");
             Integer userId = userRepository.getUserIdByEmail(mail);
             if (userId == null) {
                 failedEmails.add(mail);
@@ -406,11 +604,9 @@ public class ChatroomController {
         if (fail != 0 && success != 0) { // Not fail or succeed completely
             model.addAttribute("failed", failedEmails);
             model.addAttribute("success", successfulEmails);
-        }
-        else if (success == 0 && fail != 0) { // Failure
+        } else if (success == 0 && fail != 0) { // Failure
             model.addAttribute("failed", failedEmails);
-        }
-        else if (fail == 0 && success != 0) { // Success
+        } else if (fail == 0 && success != 0) { // Success
             model.addAttribute("success", successfulEmails);
         }
 

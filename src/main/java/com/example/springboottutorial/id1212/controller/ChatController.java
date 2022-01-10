@@ -90,7 +90,7 @@ public class ChatController {
         return chatMessage;
     }
 
-    @MessageMapping("/chat.favorite")
+   /* @MessageMapping("/chat.favorite")
     @SendTo("/topic/favorite")
     public ChatMessage favoriteChatroom(@Payload ChatMessage chatMessage) {
         Integer chatroomId = chatMessage.getChatroomId();
@@ -117,6 +117,6 @@ public class ChatController {
         }
 
         return chatMessage;
-    }
+    }*/
 
 }

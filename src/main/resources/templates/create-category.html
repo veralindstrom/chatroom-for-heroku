@@ -16,20 +16,17 @@
 </head>
 <body>
 <div class="container">
-    <form th:action="@{create-role-process(id=${chatroom.id})}" th:object="${role}"
+    <form th:action="@{create-category-process}" th:object="${category}"
           method="POST" style="max-width: 600px; margin: 0 auto;">
         <div class="row mb-3">
-            <div style="display:none" th:text="${chatroom.id}"></div>
-            <div style="display:none" th:text="${chatroom.name}"></div>
             <div style="display:none" th:text="${user.username}"></div>
             <div>
-                <h3 style="display:inline-block">Create a Role in Chatroom </h3>
-                <h3 style="display:inline-block" th:text="${chatroom.name}"></h3>
+                <h3 style="display:inline-block">Create a New Category </h3>
             </div>
             <div style="grid-template-column: auto auto; margin-top:20px;" >
-                <label style="width: 100%;"for="roleName" class="col-sm-2 col-form-label">Your Desired Role</label>
+                <label style="width: 100%;"for="category" class="col-sm-2 col-form-label">Category Name</label>
                 <div style="margin-top:10px;" class="col-md-6">
-                    <input class="form-control" id="roleName" th:field="*{role}" required minlength="none">
+                    <input class="form-control" id="category" th:field="*{category}" required minlength="1">
                 </div>
             </div>
         </div>

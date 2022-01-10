@@ -14,42 +14,43 @@
 <body>
 <div class="container text-center">
     <h3>You have created a chatroom successfully!</h3>
-    <h3 class="title" th:text="${chatroom.name}"></h3>
+    <h3 class="title" th:text="${chatroom.name}" style="margin-top: -5px;"></h3>
 
-    <div th:if="${nomail}" class="chatroom-box">
-        <h1 class="message" th:text="${nomail}"></h1>
+    <div th:if="${nomail}" class="chatroom-box" style="margin-top:30px;">
+        <h4 class="message" th:text="${nomail}"></h4>
+        <h4>You are alone</h4>
     </div>
 
-    <div th:if="${nouser}" class="chatroom-box">
-        <h1 class="message" th:text="${nouser}"></h1>
+    <div th:if="${nouser}" class="chatroom-box" style="margin-top:30px;">
+        <h4 class="message" th:text="${nouser}"></h4>
     </div>
 
-    <div th:if="${onemail}" class="chatroom-box">
-        <h1 class="message" th:text="${onemail}"></h1>
+    <div th:if="${onemail}" class="chatroom-box" style="margin-top:30px;">
+        <h4 class="message" th:text="${onemail}"></h4>
     </div>
 
-    <div th:if="${missmatch}" class="chatroom-box">
-        <h1 class="message" th:text="${missmatch}"></h1>
+    <div th:if="${missmatch}" class="chatroom-box" style="margin-top:30px;">
+        <h4 class="message" th:text="${missmatch}"></h4>
     </div>
 
-    <div th:if="${success}" class="chatroom-box">
-        <h6 class="list-title"> Following e-mails were successfully added:</h6>
-        <ul th:each="mail: ${success}">
-            <li class="list">
+    <div th:if="${success}" class="chatroom-box" style="margin-top:30px;">
+        <h4 class="list-title"> Following e-mails were successfully added:</h4>
+        <ul th:each="mail: ${success}" style="list-style-type: none;">
+            <li class="list" style="margin-left:-36px;">
                 <a class="list-mail" th:text="${mail}"></a>
             </li>
         </ul>
     </div>
-    <div th:if="${failed}" class="chatroom-box">
-        <h6 class="list-title"> Cannot find user for e-mails:</h6>
-        <ul th:each="mail: ${failed}">
-            <li class="list">
+    <div th:if="${failed}" class="chatroom-box" style="margin-top:30px;">
+        <h4 class="list-title"> Cannot find user for e-mails:</h4>
+        <ul th:each="mail: ${failed}" style="list-style-type: none;">
+            <li class="list" style="margin-left:-36px;">
                 <a class="list-mail" th:text="${mail}"></a>
             </li>
         </ul>
     </div>
 
-    <h4><a th:href="@{/home}">Click here</a></h4>
+    <h4 style="margin-top:20px; padding-top:20px;" ><a th:href="@{/home}">Click here</a></h4>
 </div>
 
 </body>
