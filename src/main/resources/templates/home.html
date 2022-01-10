@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html xmlns:th="https://thymeleaf.org">
 <head>
@@ -13,10 +14,18 @@
             font-weight: bold;
             font-size: 30px;
         }
-        .subtitle{
-            font-weight: bold;
-            font-size: 28px;
-            margin-bottom: 27px;
+        .home-header {
+            height: 70px;
+            padding: 0 0.5rem;
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            /* background-color: #F7F9FF;*/
+            background-color: #c1e3ff;
+            -webkit-box-shadow: 0px 4px 6px -4px rgba(87,88,105,0.73);
+            box-shadow: 0px 4px 6px -4px rgba(87,88,105,0.73);
+            margin-bottom: 18px;
         }
         .list-title{
             font-weight: bold;
@@ -60,16 +69,12 @@
             -moz-box-shadow: rgba(0,0,0,0.4) 0 0 5px;
             box-shadow: rgba(0,0,0,0.4) 0 0 5px;
             background-color: #c1e3ff;
-           /* background-color: #b2dcff;*/
-          /*  border-color: #128ff2;*/
-
-            /*background-color: lightblue;
-            //background-color: #bcd4e6;*/
         }
         .chatroom-box {
             min-width: 240px;
             margin: 8px;
             max-height: 500px;
+            padding-right: 5px;
             overflow-y: auto;
         }
 
@@ -79,6 +84,7 @@
             margin-right: 10px;
             margin-left: 10px;
             max-height: 500px;
+            padding-right: 5px;
             overflow-y: auto;
         }
 
@@ -104,10 +110,10 @@
         }
         .chatroom-list-element-btn {
             display: inline-block;
-            /*margin-left: 60%;*/
             text-align: right;
             float: right;
             width: 30%;
+            padding-right: 10px;
         }
         .chatroom-list-element-main {
             display: inline-block;
@@ -124,18 +130,41 @@
             color: midnightblue;
         }
 
-        @media screen and (max-width: 950px) {
+        @media screen and (max-width: 1000px) {
+            .chatroom-box {
+                min-width: 220px;
+                margin-top: 30px;
+            }
+            .chatroom-box-main {
+                min-width: 240px;
+                margin-left: 22px;
+                margin-rigth: 22px;
+                margin-top: 7px;
+            }
+        }
+        @media screen and (max-width: 900px) {
+            .chatroom-box {
+                min-width: 180px;
+                margin-top: 30px;
+            }
+            .chatroom-box-main {
+                min-width: 200px;
+                margin: 26px 7px 30px;
+            }
+        }
+
+        @media screen and (max-width: 800px) {
             .chatroom-box {
                 min-width: 160px;
-                margin-top: 30px;
-                margin-bottom: 30px;
             }
             .chatroom-box-main {
                 min-width: 165px;
-                margin: 22px 7px 30px;
             }
         }
         @media screen and (max-width: 730px) {
+            .home-header {
+                margin-bottom: 20px;
+            }
             .chatroom-box {
                 min-width: 100px;
             }
@@ -170,7 +199,7 @@
         @media screen and (max-width: 730px) {
             .chatroom-container{
                 display: block;
-                margin-top: 100px;
+                padding-top: 5px;
             }
             .chatroom-box {
                 min-height: 50px;
@@ -185,11 +214,8 @@
                 border-right: none;
                 border-top: 1px solid;
                 border-bottom: 1px solid;
-                margin-top: 30px;
-                margin-bottom: 30px;
                 padding-bottom: 30px;
-                margin-right: 5px;
-                margin-left: 5px;
+                margin: 30px 5px;
             }
             .chatroom-list-element {
                 display: inline-block;
@@ -209,12 +235,15 @@
                 width: 70%;
             }
         }
+
     </style>
 </head>
 <body>
-    <h1 class="title">User</h1>
-    <h5 class="subtitle" th:text="${user.username}"></h5>
-    <div style="display:none" id="userId" th:text="${user.userId}"></div>
+  <div class="home-header">
+      <!--h1 class="title home-title">User</h1-->
+      <h1 class="title home-subtitle" th:text="${user.username}"></h1>
+      <div style="display:none" id="userId" th:text="${user.userId}"></div>
+  </div>
 
     <div class="button-container">
         <form class="button-logout" th:action="@{/logout}" method="GET" style="margin: 0 auto";>

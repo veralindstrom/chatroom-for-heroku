@@ -1,16 +1,11 @@
 package com.example.springboottutorial.id1212.controller;
 
-import com.example.springboottutorial.id1212.entities.bridges.ChatroomCategory.ChatroomCategory;
-import com.example.springboottutorial.id1212.entities.bridges.ChatroomCategory.ChatroomCategoryRepository;
 import com.example.springboottutorial.id1212.entities.bridges.ChatroomUser.ChatroomUser;
 import com.example.springboottutorial.id1212.entities.bridges.ChatroomUser.ChatroomUserRepository;
-import com.example.springboottutorial.id1212.entities.category.CategoryRepository;
 import com.example.springboottutorial.id1212.entities.chat.*;
-import com.example.springboottutorial.id1212.entities.file.DBFileRepository;
 import com.example.springboottutorial.id1212.entities.user.User;
 import com.example.springboottutorial.id1212.entities.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

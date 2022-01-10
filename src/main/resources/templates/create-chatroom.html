@@ -15,14 +15,68 @@
             grid-template-columns: auto auto;
         }
 
+        .category {
+            margin-right: 20px;
+            margin-top: 50px;
+        }
 
-        .category-create{
+        .category-form {
+            margin: 3px;
+            padding: 10px;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+            -webkit-box-shadow: rgba(0,0,0,0.4) 0px 0 5px;
+            -moz-box-shadow: rgba(0,0,0,0.4) 0 0 5px;
+            box-shadow: rgba(0,0,0,0.4) 0 0 5px;
+            background-color: #d5f3fe;
+        }
+        .categ-btn{
+            float: right;
+        }
+        .categ-btn:hover{
+            color: lightgrey;
+        }
+
+        @media screen and (max-width: 800px) {
+            .container{
+                margin: 10%;
+                display: grid;
+                grid-template-columns: auto;
+                grid-template-rows: auto auto;
+                padding-right: 20px;
+                padding-left: 20px;
+
+            }
+            .create-category-form {
+                grid-row: 1;
+            }
+            .remove-category-form {
+                grid-row: 2;
+            }
+            .category {
+                margin-right: 10%;
+                margin-left: 10%;
+                margin-top: 50px;
+            }
+            .main-form {
+                padding: 10%;
+            }
+        }
+
+        @media screen and (max-width: 580px) {
+            .category-form {
+                max-width: 400px;
+            }
+            .main-form {
+                max-width: 400px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <form th:action="@{/create-chatroom-process}" th:object="${chatroom}"
+    <form class="main-form" th:action="@{/create-chatroom-process}" th:object="${chatroom}"
           method="post" style="max-width: 600px; margin: 0 auto;">
         <div>
             <h3 style="margin-bottom:20px;">Create a Chatroom</h3>
@@ -55,14 +109,14 @@
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
     <div class="category">
-        <form class="create-category-form" th:action="@{/create-category}" method="GET" style="max-width: 600px;">
+        <form class="category-form create-category-form" th:action="@{/create-category}" method="GET" style="max-width: 600px;">
             <label class="col-form-label"> Create a category? </label>
-            <button type="submit" class="btn role-btn">Create</button>
+            <button type="submit" class="btn categ-btn">Create</button>
             <div th:if="${existmes}" class="col-form-label" th:text="${existmes}"></div>
         </form>
-        <form class="remove-category-form" th:action="@{/remove-category}" method="GET" style="max-width: 600px;">
+        <form class="category-form remove-category-form" th:action="@{/remove-category}" method="GET" style="max-width: 600px;">
             <label class="col-form-label"> Remove a category? </label>
-            <button type="submit" class="btn role-btn">Remove</button>
+            <button type="submit" class="btn categ-btn">Remove</button>
             <div th:if="${notremove}" class="col-form-label" th:text="${notremove}"></div>
         </form>
     </div>

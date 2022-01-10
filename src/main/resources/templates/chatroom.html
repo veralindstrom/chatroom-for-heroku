@@ -279,7 +279,7 @@
                 </form>
             </div>
 
-            <h4>Files</h4>
+            <h4 th:if="${fileMessages != null}">Files</h4>
                 <div id="fileList" class="list">
                 <div th:each="fileMessage : ${fileMessages}" class="list-group-item file-item-link">
                     <span th:text="${userRepo.getUsername(fileMessage.userId)}"></span>
@@ -372,6 +372,7 @@ var leaveCounts = 0;
 var stompClient = null;
 var username = null;
 var dateTime = null;
+var chatMessageId = null;
 
 uploadBtn.addEventListener('click', showUploadContainer, true);
 
@@ -445,6 +446,7 @@ function leave(event) {
 
 
 function onError(error) {
+    //console.log(error);
     connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
     connectingElement.style.color = 'red';
     connectingElement.style.display = "block";
@@ -511,9 +513,10 @@ function onMessageReceived(payload) {
         leaveCounts = leaveCounts + 1;
 
     } else { // message.type: CHAT or other
-        //if(chatCounts !== 0) {
-        //    messageElement = null;
-        //}else {
+        /*if(chatCounts !== 0) {
+            messageElement = null;
+        }else {*/
+        if (chatMessageId !== message.messageId) {
             joinCounts = 0;
             leaveCounts = 0;
             messageElement.classList.add('chat-message');
@@ -525,8 +528,14 @@ function onMessageReceived(payload) {
             usernameElement.classList.add('username-span');
             usernameElement.appendChild(usernameText);
             messageElement.appendChild(usernameElement);
-            chatCounts = chatCounts + 1;
-        //}
+            //chatCounts = chatCounts + 1;
+            chatMessageId = message.messageId;
+        }
+        else{
+            messageElement = null;
+        }
+
+       // }
     }
     if(messageElement !== null) {
         const textElement = document.createElement('p');
