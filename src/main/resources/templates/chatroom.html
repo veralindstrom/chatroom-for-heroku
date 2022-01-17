@@ -10,9 +10,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
         body{
-           /* background-color: #F7F9FF;*/
-           /* background-color: #d5f3fe;*/
-           /* background-color: #d8f4ff;*/
             background-color: #d5f3fe;
         }
 
@@ -153,7 +150,6 @@
     </style>
 </head>
 <body onload="connect();">
-<!--body-->
 <div class="chatroom">
 
 <div id="username-page" class="chatroom-header" >
@@ -167,7 +163,6 @@
         <div style="display:none" id="userId" th:text="${user.userId}"></div>
         <form style="display:none" id="usernameForm" name="usernameForm">
             <div class="form-group">
-                <!--div class="form-control" th:text="${user.username}"></div-->
                 <input type="text" id="name" th:value="${user.username}" autocomplete="on" class="form-control" disabled/>
             </div>
             <div class="form-group" id="startForm" style="display:none">
@@ -191,16 +186,6 @@
                     <button type="submit" class="star accent username-submit"><img src="https://img.icons8.com/color/48/000000/star--v1.png"/></button>
                 </div>
             </form>
-            <!--form id="favoriteForm" class="chat-header col" style="text-align: right; display:none;">
-                <div id="removeFavoriteButton" class="form-group" style="display:block;">
-                    <button type="submit" class=" star accent username-submit"><img src="https://img.icons8.com/fluency/48/000000/star.png"/></button>
-                </div>
-            </form>
-            <form id="removeFavoriteForm" class="chat-header col" style="text-align: right; display:none;">
-                <div id="removeFavoriteButton" class="form-group" style="display:block;">
-                    <button type="submit" class=" star accent username-submit"><img src="https://img.icons8.com/fluency/48/000000/star--v1.png"/></button>
-                </div>
-            </form-->
         </div>
 </div>
 
@@ -235,14 +220,13 @@
                     </form>
                     <div class="upload-container" id="upload-container">
                         <div class="upload-content">
-                            <div class="single-upload">
-                                <form id="singleUploadForm" name="singleUploadForm" class="input-group">
-                                    <input id="singleFileUploadInput" type="file" name="file" class="file-input form-control" aria-describedby="inputGroupFileAddon04" aria-label="Upload" required />
+                            <div class="upload">
+                                <form id="uploadForm" name="uploadForm" class="input-group">
+                                    <input id="fileUploadInput" type="file" name="file" class="file-input form-control" aria-describedby="inputGroupFileAddon04" aria-label="Upload" required />
                                     <button type="submit" class="submit-btn btn btn-secondary">Send</button>
                                 </form>
                                 <div class="upload-response">
-                                    <div id="singleFileUploadError"></div>
-                                    <div id="singleFileUploadSuccess"></div>
+                                    <div id="fileUploadError"></div>
                                 </div>
                             </div>
                         </div>
@@ -298,58 +282,51 @@
 <script>
     'use strict';
 
-
-//var usernameForm = document.querySelector('#usernameForm');
-
 /* START OF FILE UPLOAD/DOWNLOAD CODE */
 var messageInput = document.querySelector('#message');
 var userId = document.querySelector('#userId').textContent;
 
-var singleUploadForm = document.querySelector('#singleUploadForm');
-var singleFileUploadInput = document.querySelector('#singleFileUploadInput');
-var singleFileUploadError = document.querySelector('#singleFileUploadError');
+var uploadForm = document.querySelector('#uploadForm');
+var fileUploadInput = document.querySelector('#fileUploadInput');
+var fileUploadError = document.querySelector('#fileUploadError');
 var sendButton = document.querySelector('#sendMsgBtn');
 
 var fileId = null;
 
-function uploadSingleFile(file) {
+function uploadFile(file) {
     var formData = new FormData();
     formData.append("file", file);
-    formData.append("userId", userId);
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/uploadFile");
 
     xhr.onload = function() {
+        //get response from post req
         var response = JSON.parse(xhr.responseText);
         if(xhr.status == 200) {
-            singleFileUploadError.style.display = "none";
+            fileUploadError.style.display = "none";
             fileId = response.fileId;
-            var fileName = response.fileName;
-            //messageInput.value = response.fileDownloadUri;
             messageInput.value= "<a href=" + response.fileDownloadUri + "; target='_blank';>" + response.fileName + " </a>";
             sendButton.click();
         } else {
-            singleFileUploadError.innerHTML = (response && response.message) || "Some Error Occurred";
+            fileUploadError.innerHTML = (response && response.message) || "Some Error Occurred";
         }
     }
-
     xhr.send(formData);
 }
 
-singleUploadForm.addEventListener('submit', function(event){
-    var files = singleFileUploadInput.files;
+uploadForm.addEventListener('submit', function(event){
+    //get selected file (only one can be selected with this code)
+    var files = fileUploadInput.files;
     if(files.length === 0) {
-        singleFileUploadError.innerHTML = "Please select a file";
-        singleFileUploadError.style.display = "block";
+        fileUploadError.innerHTML = "Please select a file";
+        fileUploadError.style.display = "block";
     }
-    uploadSingleFile(files[0]);
+    uploadFile(files[0]);
     event.preventDefault();
 }, true);
 
 /* START OF CHAT CODE */
-//var usernameForm = document.querySelector('#usernameForm');
-
 var messageForm = document.querySelector('#messageForm');
 var messageInput = document.querySelector('#message');
 var messageArea = document.querySelector('#messageArea');
@@ -359,15 +336,7 @@ var backToHome = document.querySelector('#back-to-home-btn');
 var uploadFrom = document.querySelector('#upload-container');
 var uploadBtn = document.querySelector('#uploadBtn');
 
-//var favoriteForm = document.querySelector('#favoriteForm');
-//var removeFavoriteForm = document.querySelector('#removeFavoriteForm');// for when already favorite
-//var favoriteChecked = document.querySelector('#favoriteChecked');
-//var favoriteButton = document.querySelector('#favoriteButton');
-//var removeFavoriteButton = document.querySelector('#removeFavoriteButton');
-
-
 var joinCounts = 0;
-var chatCounts = 1; // Reset at each sendMessage to zero. Only send message when chatCount = 0
 var leaveCounts = 0;
 var stompClient = null;
 var username = null;
@@ -388,11 +357,10 @@ function gotoBottom(id){
 }
 
 function connect(event) {
-    messageForm.style.display = "block";  // <-- Set it to block to display
+    messageForm.style.display = "block";  // <-- Set to block to display
 
     // CONNECT TO SOCKET SERVER
     username = document.querySelector('#name').value.trim();
-    //username = document.querySelector('#name').textContent;
     if(username) {
         connectingElement.style.display = "block";
 
@@ -402,33 +370,22 @@ function connect(event) {
         stompClient.connect({}, onConnected, onError);
     }
 
-  /*  // Tell favorite starting status to the server
-    var favoriteString = document.querySelector('#favoriteString').textContent;
-    if (favoriteString === "true"){
-        removeFavoriteForm.style.display = "block";
-    }
-    if (favoriteString === "false"){
-        favoriteForm.style.display = "block";
-    }*/
-
     event.preventDefault();
 }
 
 function onConnected() {
-    // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);
-    //stompClient.subscribe('/topic/favorite', onFavoriteStatusChange);
     // Tell your username to the server
     stompClient.send("/app/chat.addUser",
         {},
-        JSON.stringify({sender: username, type: 'JOIN'})  // adding user in ChatController and sending join
+        JSON.stringify({sender: username, type: 'JOIN'})  // adding user to connection and sending join
     )
     connectingElement.style.display = "none";
     gotoBottom("chat-messages-id");
 }
 
 function leave(event) {
-    messageForm.style.display = "none";  // <-- Set it back to none to hide display
+    messageForm.style.display = "none";  // <-- Set to none to hide display
     startForm.style.display = "block";
 
     username = document.querySelector('#name').value.trim();
@@ -454,7 +411,6 @@ function onError(error) {
 
 function sendMessage(event) {
     console.log("sent");
-    chatCounts = 0;  // When new message sent reset count
     uploadFrom.style.display = "none";
     messageForm.style.display = "block";
 
@@ -487,7 +443,7 @@ function sendMessage(event) {
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
 
-    var messageElement = document.createElement('li');  // create list element;
+    var messageElement = document.createElement('li');  // create list element
 
     if(message.type === 'JOIN') {
         if(joinCounts === 0) {
@@ -512,10 +468,7 @@ function onMessageReceived(payload) {
         }
         leaveCounts = leaveCounts + 1;
 
-    } else { // message.type: CHAT or other
-        /*if(chatCounts !== 0) {
-            messageElement = null;
-        }else {*/
+    } else { // message.type: CHAT
         if (chatMessageId !== message.messageId) {
             joinCounts = 0;
             leaveCounts = 0;
@@ -528,78 +481,29 @@ function onMessageReceived(payload) {
             usernameElement.classList.add('username-span');
             usernameElement.appendChild(usernameText);
             messageElement.appendChild(usernameElement);
-            //chatCounts = chatCounts + 1;
             chatMessageId = message.messageId;
         }
         else{
             messageElement = null;
         }
-
-       // }
     }
     if(messageElement !== null) {
-        const textElement = document.createElement('p');
+        const textElement = document.createElement('p'); // p - tag for message content
         if(message.type === 'FILE'){
             textElement.innerHTML = message.content;
         } else {
             const messageText = document.createTextNode(message.content);
             textElement.appendChild(messageText);
-        } // p - tag for message content
+        }
 
         messageElement.appendChild(textElement);
         messageArea.appendChild(messageElement);
     }
     gotoBottom("chat-messages-id");
 }
-/*
-function makeFavorite(event) {
-    //stompClient.subscribe('/topic/favorite', onFavoriteStatusChange);
-    var favorite = 'Favorite';
-    favoriteChange(favorite);
-    event.preventDefault();
-}
 
-function removeFavorite(event) {
-    //stompClient.subscribe('/topic/favorite', onFavoriteStatusChange);
-    var favorite = 'RemoveFavorite';
-    favoriteChange(favorite);
-    event.preventDefault();
-}*/
-/*
-function favoriteChange(favorite) {
-    var chatroomId = document.querySelector('#chatId').textContent;
-    var userId = document.querySelector('#userId').textContent;
-
-    if(chatroomId && userId) {
-        var chatMessage = {
-            content: favorite,
-            chatroomId: chatroomId,
-            userId : userId,
-        };
-        stompClient.send("/app/chat.favorite", {}, JSON.stringify(chatMessage));
-    }
-}*/
-/*
-function onFavoriteStatusChange(payload) {
-    var message = JSON.parse(payload.body);
-    // var messageElement = document.createElement('button'); // create button
-    if(message.content === "Favorite") {
-        removeFavoriteForm.style.display = "block";
-        favoriteForm.style.display = "none";
-        favoriteChecked.style.display = "block";
-    } else if (message.content === "RemoveFavorite") {
-        favoriteForm.style.display = "block";
-        removeFavoriteForm.style.display = "none";
-        favoriteChecked.style.display = "none";
-    }
-}*/
-
-
-//usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
 backToHome.addEventListener('click', leave, true)
-//favoriteForm.addEventListener('submit', makeFavorite, true)
-//removeFavoriteForm.addEventListener('submit', removeFavorite, true)
 document.addEventListener('DOMContentLoaded', connect, false);
 </script>
 </body>

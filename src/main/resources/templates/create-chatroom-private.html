@@ -10,10 +10,21 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
         .container{
-            margin: 10% 10%;
+            margin: 10%;
         }
-
-        @media screen and (max-width: 580px) {
+        @media screen and (max-width: 800px) {
+            .container{
+                display: grid;
+                padding-right: 20px;
+            }
+            .main-form {
+                padding-top: 10%;
+                padding-right: 10%;
+                padding-bottom: 10%;
+                padding-left: -30px;
+            }
+        }
+        @media screen and (max-width: 600px) {
             .main-form {
                 max-width: 400px;
             }

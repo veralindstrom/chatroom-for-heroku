@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html xmlns:th="https://thymeleaf.org">
 <head>
@@ -21,7 +20,6 @@
             display: flex;
             flex-direction: row;
             justify-content: space-between;
-            /* background-color: #F7F9FF;*/
             background-color: #c1e3ff;
             -webkit-box-shadow: 0px 4px 6px -4px rgba(87,88,105,0.73);
             box-shadow: 0px 4px 6px -4px rgba(87,88,105,0.73);
@@ -95,6 +93,8 @@
             margin-top: 10%;
             padding-top: 10px;
             padding-bottom: 10px;
+            margin-left: -20px;
+            padding-left: -15px;
         }
 
         .chatroom-status {
@@ -139,7 +139,7 @@
                 min-width: 240px;
                 margin-left: 22px;
                 margin-rigth: 22px;
-                margin-top: 7px;
+                margin-top: 28px;
             }
         }
         @media screen and (max-width: 900px) {
@@ -160,55 +160,15 @@
             .chatroom-box-main {
                 min-width: 165px;
             }
+            .chatroom-list {
+                margin-bottom: 20%;
+            }
         }
         @media screen and (max-width: 730px) {
             .home-header {
                 margin-bottom: 20px;
             }
-            .chatroom-box {
-                min-width: 100px;
-            }
-            .chatroom-box-main {
-                min-width: 105px;
-                margin-right: 5px;
-                margin-left: 5px;
-            }
-            .chatroom-list-element {
-                display: block;
-                float: left;
-                width: 100%;
-            }
-            .chatroom-list-element-btn {
-                display: block;
-                float: left;
-                left: 0px;
-                width: 100%;
-                margin-bottom: 10px;
-                margin-left: 0px;
-            }
-            .chatroom-list-element-main {
-                display: block;
-                float: left;
-                width: 100%;
-            }
-            .chatroom-list {
-                margin-right: 0px;
-            }
-        }
 
-        @media screen and (max-width: 730px) {
-            .chatroom-container{
-                display: block;
-                padding-top: 5px;
-            }
-            .chatroom-box {
-                min-height: 50px;
-                max-height: 300px;
-            }
-            .chatroom-box-main {
-                min-height: 50px;
-                max-height: 300px;
-            }
             .chatroom-box-border{
                 border-left: none;
                 border-right: none;
@@ -217,22 +177,42 @@
                 padding-bottom: 30px;
                 margin: 30px 5px;
             }
+            .chatroom-container{
+                display: block;
+                padding-top: 5px;
+            }
+            .chatroom-box {
+                min-height: 50px;
+                max-height: 300px;
+                min-width: 100px;
+            }
+            .chatroom-box-main {
+                min-height: 50px;
+                max-height: 300px;
+                min-width: 105px;
+                margin-right: 5px;
+                margin-left: 5px;
+            }
             .chatroom-list-element {
-                display: inline-block;
                 float: left;
+                width: 100%;
+                display: inline-block;
                 width: 70%;
             }
             .chatroom-list-element-btn {
                 display: inline-block;
-                margin-left: 60%;
                 text-align: right;
                 float: right;
                 width: 30%;
             }
             .chatroom-list-element-main {
+                width: 100%;
                 display: inline-block;
                 float: left;
                 width: 70%;
+            }
+            .chatroom-list {
+                margin-right: 0px;
             }
         }
 
@@ -240,7 +220,6 @@
 </head>
 <body>
   <div class="home-header">
-      <!--h1 class="title home-title">User</h1-->
       <h1 class="title home-subtitle" th:text="${user.username}"></h1>
       <div style="display:none" id="userId" th:text="${user.userId}"></div>
   </div>
@@ -259,7 +238,7 @@
     <div class="chatroom-container">
         <div class="chatroom-box-border" >
             <div class="chatroom-box">
-                <h6 class="list-title"> Your Favorite Chatrooms </h6>
+                <h6 class="list-title"> Your Favorite Chats </h6>
                 <ul class="chatroom-ul" th:each="chatroom: ${favchatroom}">
                     <li class="chatroom-list">
                         <a class="chatroom-list-element" style="display: inline-block;"; th:href="@{/chatroom/{id}(id=${chatroom.id})}" th:text="${chatroom.name}"></a>
@@ -288,7 +267,7 @@
         </div>
         <div class="chatroom-box-border">
             <div class="chatroom-box">
-                <h6 class="list-title"> Public Chatrooms you can Join </h6>
+                <h6 class="list-title"> Public Chats you can Join </h6>
                 <ul class="chatroom-ul" th:each="chatroom: ${pubchatroom}">
                     <li class="chatroom-list">
                         <a class="chatroom-list-element-alone" th:href="@{/chatroom/{id}(id=${chatroom.id})}" th:text="${chatroom.name}"></a>

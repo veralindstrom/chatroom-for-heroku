@@ -10,13 +10,30 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
         .container{
-            margin: 10% 10%;
+            margin: 10%;
+        }
+        @media screen and (max-width: 800px) {
+            .container{
+                display: grid;
+                padding-right: 20px;
+            }
+            .change-favorite-form {
+                padding-top: 10%;
+                padding-right: 10%;
+                padding-bottom: 10%;
+                padding-left: -30px;
+            }
+        }
+        @media screen and (max-width: 600px) {
+            .change-favorite-form {
+                max-width: 400px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <form th:action="@{change-chatroom-category-process(id=${chatroom.id})}"
+    <form class="change-favorite-form" th:action="@{change-chatroom-category-process(id=${chatroom.id})}"
           method="POST" style="max-width: 600px; margin: 0 auto;">
         <div class="row mb-3">
             <div style="display:none" th:text="${user.username}"></div>
